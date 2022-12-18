@@ -134,6 +134,22 @@ export class AppComponent {
     },
     {
       type: 'select',
+      label: 'Children',
+      name: 'children',
+      value: '0',
+      options: ['0', '1', '2', '3','4','5'],
+      isDependent: true,
+      dependentName:  'maritalStatus',
+      validations: [
+        {
+          name: 'required',
+          validator: Validators.required,
+          message: 'Select child Required',
+        },
+      ],
+    },
+    {
+      type: 'select',
       label: 'Country',
       name: 'country',
       value: 'UK',

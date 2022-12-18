@@ -4,26 +4,27 @@ import {
   Input,
   OnChanges,
   OnInit,
-  Output
-} from "@angular/core";
+  Output,
+} from '@angular/core';
 import {
   FormGroup,
   FormBuilder,
   Validators,
-  FormControl
-} from "@angular/forms";
-import { FieldConfig, Validator } from "../../field.interface";
+  FormControl,
+} from '@angular/forms';
+import { FieldConfig, Validator } from '../../field.interface';
 
 @Component({
-  exportAs: "dynamicForm",
-  selector: "dynamic-form",
+  exportAs: 'dynamicForm',
+  selector: 'dynamic-form',
   template: `
   <form class="dynamic-form" [formGroup]="form" (submit)="onSubmit($event)">
-  <ng-container *ngFor="let field of fields;" dynamicField [field]="field" [group]="form">
+  <ng-container *ngFor="let field of fields;" >
+    <ng-container dynamicField [field]="field" [group]="form"></ng-container>
   </ng-container>
   </form>
   `,
-  styles: []
+  styles: [],
 })
 export class DynamicFormComponent implements OnInit {
   @Input() fields: FieldConfig[] = [];
@@ -38,8 +39,12 @@ export class DynamicFormComponent implements OnInit {
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
+    console.log('---this.fields----');
+    console.log(this.fields);
     this.form = this.createControl(this.fields);
-    this.form.valueChanges.subscribe(x => {
+    this.form.valueChanges.subscribe((x) => {
+     console.log(x);
+     // if(this.form.value.isDependent && this.form.value.dependentName)
       this.submit.emit(x);
       //this.childFG.emit(this.form);
     });
@@ -56,21 +61,21 @@ export class DynamicFormComponent implements OnInit {
   }
 
   createControl(fields) {
-    console.log("fields",fields)
+    console.log('fields', fields);
     const group = this.fb.group({});
-    fields.forEach(field => {
-      if (field.type === "button") return;
-      if(field.type === "childform"){
+    fields.forEach((field) => {
+      if (field.type === 'button') return;
+      if (field.type === 'childform') {
         let items = [];
-        field.formArrays.forEach(fields => {
+        field.formArrays.forEach((fields) => {
           items.push(this.createControl(fields));
         });
         let controlArray = this.fb.array(items);
         group.addControl(field.name, controlArray);
-      }else{
+      } else {
         const control = this.fb.control(
-        field.value,
-        this.bindValidations(field.validations || [])
+          field.value,
+          this.bindValidations(field.validations || [])
         );
         group.addControl(field.name, control);
       }
@@ -82,7 +87,7 @@ export class DynamicFormComponent implements OnInit {
   bindValidations(validations: any) {
     if (validations.length > 0) {
       const validList = [];
-      validations.forEach(valid => {
+      validations.forEach((valid) => {
         validList.push(valid.validator);
       });
       return Validators.compose(validList);
@@ -91,7 +96,7 @@ export class DynamicFormComponent implements OnInit {
   }
 
   validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
+    Object.keys(formGroup.controls).forEach((field) => {
       const control = formGroup.get(field);
       control.markAsTouched({ onlySelf: true });
     });

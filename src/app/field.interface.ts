@@ -12,5 +12,7 @@ export interface FieldConfig {
   type: string;
   value?: any;
   validations?: Validator[];
-  formArrays?:any[];
+  formArrays?: any[];
+  isDependent?: boolean;
+  dependentName?: string;
 }
